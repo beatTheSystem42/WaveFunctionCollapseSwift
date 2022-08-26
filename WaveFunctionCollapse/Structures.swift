@@ -8,7 +8,9 @@
 import Foundation
 import UIKit
 
-var tiles: [Tile] = [tile0, tile1, tile2, tile3, tile4, tile5, tile6, tile7, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15, tile16, tile17, tile18, tile19, tile20, tile21, tile22, tile23, tile24]
+var tiles: [Tile] = [tile0, tile1, tile2, tile3, tile4, tile6, tile8, tile12, tile13, tile14, tile18, tile19, tile20, tile21, tile22, tile23, tile24]
+//var tiles: [Tile] = [tile0, tile1, tile2, tile3, tile4]
+
 
 let tile0Side0 = TileSide(id: 0, key: [0, 0, 0])
 let tile0Side1 = TileSide(id: 1, key: [0, 1, 0])
@@ -176,11 +178,11 @@ struct TileSide {
     var key: [Int]
 }
 
-enum TileRotation: Float, CaseIterable {
+enum TileRotation: Int, CaseIterable {
     case up = 0
-    case right = -90
+    case right = 90
     case down = 180
-    case left = 90
+    case left = -90
 }
 
 
@@ -199,6 +201,7 @@ struct Space {
     var size: CGFloat
     var collapsed = false
     var possible: [Int]
+    var posRotations: [Int]
     var tile: Tile?
     var rotation: TileRotation
     var layer: CALayer
@@ -222,11 +225,9 @@ struct Space {
         }
         
         var finalTiles: [Int] = []
-        
+        var finalRots: [Int] = []
         
         for p in posTiles {
-            
-            let t = tiles[p]
             
         sLoop:
             for i in 0..<4 {
@@ -240,21 +241,21 @@ struct Space {
                     }
                 }
                 if let lft = sides[.left] {
-                    var s = 0 - i
+                    var s = 3 - i
                     s = s < 0 ? 4 + s : s
                     if tiles[p].sides[s].key == lft {
                         m += 1
                     }
                 }
                 if let right = sides[.right] {
-                    var s = 0 - i
+                    var s = 1 - i
                     s = s < 0 ? 4 + s : s
                     if tiles[p].sides[s].key == right {
                         m += 1
                     }
                 }
                 if let bot = sides[.bot] {
-                    var s = 0 - i
+                    var s = 2 - i
                     s = s < 0 ? 4 + s : s
                     if tiles[p].sides[s].key == bot {
                         m += 1
@@ -263,14 +264,16 @@ struct Space {
                 
                 if m == sides.keys.count {
                     finalTiles.append(p)
+                    finalRots.append(i)
                     break sLoop
                 }
             }
         }
         
         possible = finalTiles
-        
-        print("possible tiles for \(row), \(col): \(possible)")
+        posRotations = finalRots
+        print("\npossible tiles for \(col), \(row): \(possible)")
+        print("possible rotations for \(col), \(row): \(posRotations)")
     }
     
     mutating func updateSides() {
@@ -300,6 +303,8 @@ struct Space {
                      .bot: tile.sides[1].key,
                      .left: tile.sides[2].key]
         }
+        
+        print("\nupdated sides for \(col), \(row): \(sides)")
     }
 }
 

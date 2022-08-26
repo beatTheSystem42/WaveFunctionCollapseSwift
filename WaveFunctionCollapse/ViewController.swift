@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    var dim = 9
+    var dim = 40
     var spaces: [Space] = []
     var seed: Int = 0
     
@@ -18,7 +18,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         print("here")
         
-        tiles = [tile0, tile1, tile2, tile3, tile4, tile5, tile6, tile7, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15, tile16, tile17, tile18, tile19, tile20, tile21, tile22, tile23, tile24]
+        tiles = [tile0, tile1, tile2, tile3, tile4, tile6, tile8, tile12, tile13, tile14, tile18, tile19, tile20, tile21, tile22, tile23, tile24]
+        
+        //tiles = [tile0, tile1, tile2, tile3, tile4]
         
         setupGrid()
     }
@@ -27,16 +29,73 @@ class ViewController: UIViewController {
         super.viewDidAppear(false)
         
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let uncollapsed = spaces.filter({$0.collapsed == false})
+        if uncollapsed.count > 0 {
+            seedGrid()
+        } else {
+            for i in 0..<spaces.count {
+                spaces[i].collapsed = false
+                spaces[i].possible = [Int](tiles.indices)
+                spaces[i].posRotations = [0,1,2,3]
+                spaces[i].tile = nil
+                spaces[i].sides = [:]
+                spaces[i].layer.contents = nil
+            }
+        }
+    }
 
     
     private func startCollapsing() {
         
         updateEntropy(seed)
         
+        var hasNeighbs: [Space] = []
+        for i in 0..<spaces.count {
+            if getSideNeighbors(i).count > 0 {
+                hasNeighbs.append(spaces[i])
+            }
+        }
+        var uncollapsed: [Space] = []
+        if hasNeighbs.count > 0 {
+            uncollapsed = hasNeighbs.filter({$0.collapsed == false})
+        } else {
+            uncollapsed = spaces.filter({$0.collapsed == false})
+        }
         
+        while uncollapsed.count > 0 {
+            let leastEntropy = uncollapsed.sorted(by: {$0.possible.count < $1.possible.count})
+            let lowCount = leastEntropy.first!.possible.count
+            let lowest = leastEntropy.filter({$0.possible.count == lowCount})
+            let randSpace = lowest.randomElement()!
+            let s = spaces.firstIndex(where: {$0 == randSpace})!
+            collapse(s)
+            uncollapsed = spaces.filter({$0.collapsed == false})
+        }
     }
     
     private func collapse(_ s: Int) {
+        print("collapsing space: \(s)")
+        guard spaces[s].possible.count > 0 else {
+            spaces[s].collapsed = true
+            return
+        }
+        let r = randyInt(min: 0, max: spaces[s].possible.count-1)
+        let t = spaces[s].possible[r]
+        let tile = tiles[t]
+        spaces[s].tile = tile
+        let rot = TileRotation.allCases[spaces[s].posRotations[r]]
+        let rad = CGFloat(Float(rot.rawValue) * .pi / 180)
+        print(rot.rawValue)
+        print(Float(rot.rawValue))
+        DispatchQueue.main.async {
+            self.spaces[s].layer.contents = tile.img.cgImage
+            self.spaces[s].layer.transform = CATransform3DMakeRotation(rad, 0, 0, 1.0)
+        }
+        spaces[s].rotation = rot
+        spaces[s].collapsed = true
+        spaces[s].updateSides()
         
         updateEntropy(s)
     }
@@ -74,7 +133,7 @@ class ViewController: UIViewController {
     
     
     private func seedGrid() {
-        let i = randyInt(min: 0, max: spaces.count-1)
+        let i = randyInt(min: 0, max: 0)
         let rTile = tiles.randomElement()!
         spaces[i].tile = rTile
         spaces[i].layer.contents = rTile.img.cgImage
@@ -87,7 +146,7 @@ class ViewController: UIViewController {
     }
     
     private func setupGrid() {
-        view.backgroundColor = UIColor.lightGray
+        view.backgroundColor = UIColor.cyan
         
         let top = (view.frame.height * 0.5) - (view.frame.width * 0.5)
         let sSize = view.frame.width / CGFloat(dim)
@@ -102,17 +161,15 @@ class ViewController: UIViewController {
                 layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
                 layer.position = CGPoint(x: x, y: y)
                 let rot: TileRotation = .up
-                let rad = CGFloat(rot.rawValue * .pi / 180)
+                let rad = CGFloat(Float(rot.rawValue) * .pi / 180)
                 layer.transform = CATransform3DMakeRotation(rad, 0, 0, 1.0)
-                layer.borderWidth = 1.0
+                layer.borderWidth = 0.25
                 layer.borderColor = UIColor.darkGray.cgColor
                 view.layer.addSublayer(layer)
-                let space = Space(row: r, col: c, x: x, y: y, size: sSize, collapsed: false, possible: [Int](tiles.indices), tile: nil, rotation: rot, layer: layer)
+                let space = Space(row: r, col: c, x: x, y: y, size: sSize, collapsed: false, possible: [Int](tiles.indices), posRotations: [0,1,2,3], tile: nil, rotation: rot, layer: layer)
                 spaces.append(space)
             }
         }
-        
-        seedGrid()
     }
     
     private func getAllNeighbors(space: Space) -> [Space] {
