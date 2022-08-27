@@ -8,8 +8,8 @@
 import Foundation
 import UIKit
 
-var tiles: [Tile] = [tile0, tile1, tile2, tile3, tile4, tile6, tile8, tile12, tile13, tile14, tile18, tile19, tile20, tile21, tile22, tile23, tile24]
-//var tiles: [Tile] = [tile0, tile1, tile2, tile3, tile4]
+//tiles = [tile0, tile1, tile2, tile3, tile4, tile5, tile6, tile7, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15, tile16, tile17, tile18, tile19, tile20, tile21, tile22, tile23, tile24]
+var tiles: [Tile] = [tile0, tile1, tile2, tile3, tile4, tile5, tile6, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15, tile16, tile17, tile18, tile19, tile20, tile21, tile22, tile23, tile24, tile25, tile26, tile27, tile28]
 
 
 let tile0Side0 = TileSide(id: 0, key: [0, 0, 0])
@@ -161,6 +161,30 @@ let tile24Side1 = TileSide(id: 1, key: [1, 0, 1])
 let tile24Side2 = TileSide(id: 2, key: [1, 1, 0])
 let tile24Side3 = TileSide(id: 3, key: [0, 0, 1])
 let tile24: Tile = Tile(id: 1, img: UIImage(named: "24")!, sides: [tile24Side0, tile24Side1, tile24Side2, tile24Side3])
+
+let tile25Side0 = TileSide(id: 0, key: [0, 0, 0])
+let tile25Side1 = TileSide(id: 1, key: [0, 0, 1])
+let tile25Side2 = TileSide(id: 2, key: [1, 0, 1])
+let tile25Side3 = TileSide(id: 3, key: [1, 0, 0])
+let tile25: Tile = Tile(id: 1, img: UIImage(named: "25")!, sides: [tile25Side0, tile25Side1, tile25Side2, tile25Side3])
+
+let tile26Side0 = TileSide(id: 0, key: [0, 0, 0])
+let tile26Side1 = TileSide(id: 1, key: [0, 0, 0])
+let tile26Side2 = TileSide(id: 2, key: [0, 1, 1])
+let tile26Side3 = TileSide(id: 3, key: [1, 1, 0])
+let tile26: Tile = Tile(id: 1, img: UIImage(named: "26")!, sides: [tile26Side0, tile26Side1, tile26Side2, tile26Side3])
+
+let tile27Side0 = TileSide(id: 0, key: [0, 0, 0])
+let tile27Side1 = TileSide(id: 1, key: [0, 0, 0])
+let tile27Side2 = TileSide(id: 2, key: [0, 1, 1])
+let tile27Side3 = TileSide(id: 3, key: [1, 0, 0])
+let tile27: Tile = Tile(id: 1, img: UIImage(named: "27")!, sides: [tile27Side0, tile27Side1, tile27Side2, tile27Side3])
+
+let tile28Side0 = TileSide(id: 0, key: [1, 1, 0])
+let tile28Side1 = TileSide(id: 1, key: [0, 0, 0])
+let tile28Side2 = TileSide(id: 2, key: [0, 0, 0])
+let tile28Side3 = TileSide(id: 3, key: [0, 0, 1])
+let tile28: Tile = Tile(id: 1, img: UIImage(named: "28")!, sides: [tile28Side0, tile28Side1, tile28Side2, tile28Side3])
 
 struct Tile {
     var id: Int

@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    var dim = 40
+    var dim = 22
     var spaces: [Space] = []
     var seed: Int = 0
     
@@ -18,9 +18,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         print("here")
         
-        tiles = [tile0, tile1, tile2, tile3, tile4, tile6, tile8, tile12, tile13, tile14, tile18, tile19, tile20, tile21, tile22, tile23, tile24]
+        //tiles = [tile0, tile1, tile2, tile3, tile4, tile5, tile6, tile7, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15, tile16, tile17, tile18, tile19, tile20, tile21, tile22, tile23, tile24]
         
-        //tiles = [tile0, tile1, tile2, tile3, tile4]
+        tiles = [tile0, tile1, tile2, tile3, tile4, tile5, tile6, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15, tile16, tile17, tile18, tile19, tile20, tile21, tile22, tile23, tile24, tile25, tile26, tile27, tile28]
         
         setupGrid()
     }
@@ -31,19 +31,17 @@ class ViewController: UIViewController {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let uncollapsed = spaces.filter({$0.collapsed == false})
-        if uncollapsed.count > 0 {
-            seedGrid()
-        } else {
-            for i in 0..<spaces.count {
-                spaces[i].collapsed = false
-                spaces[i].possible = [Int](tiles.indices)
-                spaces[i].posRotations = [0,1,2,3]
-                spaces[i].tile = nil
-                spaces[i].sides = [:]
-                spaces[i].layer.contents = nil
-            }
+        
+        for i in 0..<spaces.count {
+            spaces[i].collapsed = false
+            spaces[i].possible = [Int](tiles.indices)
+            spaces[i].posRotations = [0,1,2,3]
+            spaces[i].tile = nil
+            spaces[i].sides = [:]
+            spaces[i].layer.contents = nil
         }
+        
+        seedGrid()
     }
 
     
@@ -51,27 +49,19 @@ class ViewController: UIViewController {
         
         updateEntropy(seed)
         
-        var hasNeighbs: [Space] = []
-        for i in 0..<spaces.count {
-            if getSideNeighbors(i).count > 0 {
-                hasNeighbs.append(spaces[i])
-            }
-        }
-        var uncollapsed: [Space] = []
-        if hasNeighbs.count > 0 {
-            uncollapsed = hasNeighbs.filter({$0.collapsed == false})
-        } else {
-            uncollapsed = spaces.filter({$0.collapsed == false})
-        }
+        var leastEntropy: [Space] = []
+        leastEntropy = spaces.sorted(by: {$0.possible.count < $1.possible.count}).filter({$0.collapsed == false})
+        //var noEntropy: [Space] = []
+        //noEntropy = spaces.filter({$0.possible.count == 0})
         
-        while uncollapsed.count > 0 {
-            let leastEntropy = uncollapsed.sorted(by: {$0.possible.count < $1.possible.count})
+        while leastEntropy.count > 0 {
             let lowCount = leastEntropy.first!.possible.count
             let lowest = leastEntropy.filter({$0.possible.count == lowCount})
             let randSpace = lowest.randomElement()!
             let s = spaces.firstIndex(where: {$0 == randSpace})!
             collapse(s)
-            uncollapsed = spaces.filter({$0.collapsed == false})
+            leastEntropy = spaces.sorted(by: {$0.possible.count < $1.possible.count}).filter({$0.collapsed == false})
+            //noEntropy = spaces.filter({$0.possible.count == 0})
         }
     }
     
@@ -89,15 +79,14 @@ class ViewController: UIViewController {
         let rad = CGFloat(Float(rot.rawValue) * .pi / 180)
         print(rot.rawValue)
         print(Float(rot.rawValue))
-        DispatchQueue.main.async {
-            self.spaces[s].layer.contents = tile.img.cgImage
-            self.spaces[s].layer.transform = CATransform3DMakeRotation(rad, 0, 0, 1.0)
-        }
-        spaces[s].rotation = rot
-        spaces[s].collapsed = true
-        spaces[s].updateSides()
         
-        updateEntropy(s)
+        self.spaces[s].layer.contents = tile.img.cgImage
+        self.spaces[s].layer.transform = CATransform3DMakeRotation(rad, 0, 0, 1.0)
+        self.spaces[s].rotation = rot
+        self.spaces[s].collapsed = true
+        self.spaces[s].updateSides()
+        
+        self.updateEntropy(s)
     }
     
     private func updateEntropy(_ s: Int) {
@@ -133,7 +122,8 @@ class ViewController: UIViewController {
     
     
     private func seedGrid() {
-        let i = randyInt(min: 0, max: 0)
+        let r = Int(round(Double(dim / 2)))
+        guard let i = spaces.firstIndex(where: {$0.col == r && $0.row == r}) else {return}
         let rTile = tiles.randomElement()!
         spaces[i].tile = rTile
         spaces[i].layer.contents = rTile.img.cgImage
@@ -146,7 +136,7 @@ class ViewController: UIViewController {
     }
     
     private func setupGrid() {
-        view.backgroundColor = UIColor.cyan
+        view.backgroundColor = UIColor.orange
         
         let top = (view.frame.height * 0.5) - (view.frame.width * 0.5)
         let sSize = view.frame.width / CGFloat(dim)
