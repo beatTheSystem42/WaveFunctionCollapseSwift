@@ -136,7 +136,7 @@ class ViewController: UIViewController {
     }
     
     private func setupGrid() {
-        view.backgroundColor = UIColor.orange
+        view.backgroundColor = UIColor.cyan
         
         let top = (view.frame.height * 0.5) - (view.frame.width * 0.5)
         let sSize = view.frame.width / CGFloat(dim)
