@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    var dim = 22
+    var dim = 16
     var spaces: [Space] = []
     var seed: Int = 0
     
@@ -19,8 +19,10 @@ class ViewController: UIViewController {
         print("here")
         
         //tiles = [tile0, tile1, tile2, tile3, tile4, tile5, tile6, tile7, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15, tile16, tile17, tile18, tile19, tile20, tile21, tile22, tile23, tile24]
+        //tiles = [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11]
+        tiles = [e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20]
         
-        tiles = [tile0, tile1, tile2, tile3, tile4, tile5, tile6, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15, tile16, tile17, tile18, tile19, tile20, tile21, tile22, tile23, tile24, tile25, tile26, tile27, tile28]
+        //tiles = [tile0, tile1, tile2, tile3, tile4, tile5, tile6, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15, tile16, tile17, tile18, tile19, tile20, tile21, tile22, tile23, tile24, tile25, tile26, tile27, tile28]
         
         setupGrid()
     }
@@ -136,7 +138,7 @@ class ViewController: UIViewController {
     }
     
     private func setupGrid() {
-        view.backgroundColor = UIColor.cyan
+        view.backgroundColor = UIColor.white
         
         let top = (view.frame.height * 0.5) - (view.frame.width * 0.5)
         let sSize = view.frame.width / CGFloat(dim)
@@ -154,7 +156,7 @@ class ViewController: UIViewController {
                 let rad = CGFloat(Float(rot.rawValue) * .pi / 180)
                 layer.transform = CATransform3DMakeRotation(rad, 0, 0, 1.0)
                 layer.borderWidth = 0.25
-                layer.borderColor = UIColor.darkGray.cgColor
+                layer.borderColor = UIColor.clear.cgColor
                 view.layer.addSublayer(layer)
                 let space = Space(row: r, col: c, x: x, y: y, size: sSize, collapsed: false, possible: [Int](tiles.indices), posRotations: [0,1,2,3], tile: nil, rotation: rot, layer: layer)
                 spaces.append(space)
